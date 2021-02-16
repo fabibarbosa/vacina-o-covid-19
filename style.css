@@ -1,0 +1,101 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap');
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	font-family: 'Roboto', sans-serif;
+}
+body,html {
+	width: 100%;
+	height: 100%;
+}
+div.hero {
+	padding: 20px;
+}
+
+h1#title {
+	font-size: 5vw;
+}
+div.dropbox {
+	padding: 10px;
+}
+div.update-info {
+	font-size: 5vw;
+	color: #403838;
+	text-align: left;
+	padding: 12px;
+	margin: 0 auto;
+}
+
+div.row {
+	max-width: 1200px;
+    width: 100%;
+    display: block;
+    padding: 10px;
+    margin: 0 auto;
+
+}
+
+
+div.card {
+	width: 90%;
+	padding: 15px;
+	height: auto;
+	border-radius: 15px;
+	margin: 0 auto;
+	color: white;
+	margin-top: 26px;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+
+}
+div#card-vaccination {
+	background-color: #FC8149;
+
+}
+div#card-imunnized {
+	background-color: #2CC09C;
+
+}
+p.card-number {
+	font-size: 14vw;
+}
+
+span.card-number-addition {
+	font-size: 7vw;
+
+}
+
+h4.card-title {
+	font-size: 6vw;
+	margin-top: 10px;
+
+}
+
+@media only screen and (min-width: 768px) {
+	h1#title {
+		font-size: 3vw;
+	}
+	div.card {
+		width: 47%;
+		margin-left: 2%;
+		height: 35vh;
+		float: left;
+	}
+	p.card-number {
+		font-size: 5vw;
+	}
+
+	span.card-number-addition {
+		font-size: 3vw;
+
+	}
+
+	h4.card-title {
+		font-size: 3vw;
+		margin-top: 10px;
+
+	}
+	div.update-info {
+		font-size: 3vw;
+	}
+}
