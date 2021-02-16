@@ -20,3 +20,6 @@ Para rodar o projeto é simples, basta baixar os arquivos em seu computador e in
 ### Colaborar 🙋
 Sinta-se livre para adicionar novas features ou corrigir algum bug.
 😊  Envie seu pull-request!
+
+####Fonte de dados
+Você pode ter acesso a estes e mais outros dados no repositório oficial: https://github.com/owid/covid-19-data/tree/master/public/data
