@@ -1,110 +1,169 @@
-model = {
-	requestURL: "https://covid.ourworldindata.org/data/owid-covid-data.json",
-	countryInfos: {},
-	placeHolders: {},
-	validCountrysInfos : [],
-	listDom : document.getElementById('selectOptions')
+'use strict'
+
+
+let model = (function () {
+	
+return {
+	countries : [],
+	validCountries : [],
+	weekReport : [],
 }
+})();
 
-view = {
-	render: function () {
-		this.getPlaceholders();
-		this.startCountryList();
-		model.listDom.addEventListener("change", (e)=> {
-			controller.getSelectedCountryInfos(e);
-		})
-	},
 
-	//Seleciona os elementos do dom que irão mostrar os dados capturados
-	getPlaceholders: () => {
-		data = {
-			appliedVaccines: document.getElementById('vaccination-number'),
-			appliedVaccinesAddition: document.getElementById('vaccination-number-addition'),
-			immunizedPeople: document.getElementById('immunized-number'),
-			lastUpdate : document.getElementById('last-update')
+let view = (function () {
+	const placeHolders = {
+		numberTotal : document.getElementById('numberTotal'),
+		newNumber : document.getElementById('newNumber'),
+		totalImmunized : document.getElementById('totalImmunized')
+	}
+	return {
+		//Exibi os dados no dashboard
+		showDashboardValues : (data) => {
+			const dom = placeHolders;
+			dom.numberTotal.textContent = data.totalVaccinations;
+			dom.newNumber.textContent  =  data.newVaccinations;
+			dom.totalImmunized.textContent =  data.fullyVaccinated;
+		},
+
+		//Gera uma lista com os países válidos
+		generateList : (countrieKey, countrieName) => {
+			let sectionDOM = document.querySelector('.country-selector').innerHTML += `<option value="${countrieKey}"> ${countrieName} </option>`;
+		},
+		cleanTable : () => {
+			let table = document.getElementById('week-report');
+			while (table.rows.length > 0) {
+				table.deleteRow(1);
+			}
+
+
+		},
+		generateTable : (dataArray, tableData) => {
+			let table = tableData;
+			for (let i = 0; i < 7; i++) {
+				let newRow = table.insertRow(1 + i);
+
+					let newText = document.createTextNode(`${dataArray[i].date}`);
+					let newCell = newRow.insertCell(0);
+					newCell.appendChild(newText);
+
+					newText = document.createTextNode(`${dataArray[i].totalVaccinations}`);
+					newCell = newRow.insertCell(-1);
+					newCell.appendChild(newText);
+
+					newText = document.createTextNode(`${dataArray[i].newVaccinations}`);
+					newCell = newRow.insertCell(-1);
+					newCell.appendChild(newText);
+
+					newText = document.createTextNode(`${dataArray[i].fullyVaccinated}`);
+					newCell = newRow.insertCell(-1);
+					newCell.appendChild(newText);
+
+					
+			}
 		}
-		return model.placeHolders = data;
-	},
 
-	//Efetuar a criação de uma lista de acordo com os países válidos
-	startCountryList: () => {
-		for (let i = 0; i < model.validCountrysInfos.length; i++) {
-			model.listDom.innerHTML += `<option value="${model.validCountrysInfos[i]}">  ${model.countryInfos[model.validCountrysInfos[i]].location}</option>`;
+	};
+})();
+
+
+
+let controller = ( function (appModel,appView) {
+	document.querySelector('.country-selector').addEventListener("change",  (e) => {
+		let data = checkDailyReport(e.target.value);
+		appView.showDashboardValues(data);
+		checkWeek(e.target.value);
+		appView.generateTable(appModel.weekReport);
+		
+	});
+
+	function convertData (value) {
+		if (!value) {
+			return ("-");
+		}else {
+			return value.toLocaleString();
+		}
+	} 
+
+	function checkWeek (countryKey) {
+		for (let i = 7; i > 0; i--) {
+			let objeto = {
+				date : convertData(appModel.countries[countryKey].data[appModel.countries[countryKey].data.length - i]?.date),
+				totalVaccinations : convertData(appModel.countries[countryKey].data[appModel.countries[countryKey].data.length - i]?.total_vaccinations),
+				newVaccinations : convertData(appModel.countries[countryKey].data[appModel.countries[countryKey].data.length - i]?.new_vaccinations),
+				fullyVaccinated : convertData(appModel.countries[countryKey].data[appModel.countries[countryKey].data.length - i]?.people_fully_vaccinated)
+			}
+			appModel.weekReport.push(objeto);
+		}
+
+	}
+	function checkDailyReport (countryKey) {
+		if (appModel.countries[countryKey].data[appModel.countries[countryKey].data.length - 1].total_vaccinations) {
+			return {
+				totalVaccinations : convertData(appModel.countries[countryKey].data[appModel.countries[countryKey].data.length - 1].total_vaccinations),
+				newVaccinations : convertData(appModel.countries[countryKey].data[appModel.countries[countryKey].data.length - 1].new_vaccinations),
+				fullyVaccinated : convertData(appModel.countries[countryKey].data[appModel.countries[countryKey].data.length - 1].people_fully_vaccinated)
+			}
+		}else if (appModel.countries[countryKey].data[appModel.countries[countryKey].data.length - 2].total_vaccinations) {
+			return {
+				totalVaccinations :  convertData(appModel.countries[countryKey].data[appModel.countries[countryKey].data.length - 2].total_vaccinations),
+				newVaccinations : convertData(appModel.countries[countryKey].data[appModel.countries[countryKey].data.length - 2].new_vaccinations),
+				fullyVaccinated : convertData(appModel.countries[countryKey].data[appModel.countries[countryKey].data.length - 2].people_fully_vaccinated)
+			}
+		}else if (appModel.countries[countryKey].data[appModel.countries[countryKey].data.length - 3].total_vaccinations) {
+			return {
+				totalVaccinations :  convertData(appModel.countries[countryKey].data[appModel.countries[countryKey].data.length - 3].total_vaccinations),
+				newVaccinations : convertData(appModel.countries[countryKey].data[appModel.countries[countryKey].data.length - 3].new_vaccinations),
+				fullyVaccinated : convertData(appModel.countries[countryKey].data[appModel.countries[countryKey].data.length - 3].people_fully_vaccinated)
+			}
 		}
 	}
-}
 
-controller = {
+	//Faz a requisição do arquivo json
+	async function requestData () {
+		const requestURL = "https://covid.ourworldindata.org/data/owid-covid-data.json";
+		let response = await fetch(requestURL);
+		let countryInfos = await response.json();
+		appModel.countries = countryInfos;
+	}
 
-	//Realizar o fetch com os dados sobre  a vacina
-	requestData: async () => {
-		let response = await fetch(model.requestURL);
-		model.countryInfos = await response.json();
-		console.log(response)
-	},
-	init: async () => {
-		await controller.requestData();
-		controller.filterValidCountrys();
-		view.render();
-	},
+	//Verifica os países que iniciaram o programa de vacinação (covid-19)
+	async function checkValidCountries(){
+		await requestData();
+		let countriesKeys = [];
 
-	//Filtra os dados do json, selecionando somente os países que iniciaram a vacinação
-	filterValidCountrys: () => {
-		function checkValidCountry(country) {
-			isValid = 0;
-			for (let i = 0; i < 3; i++) {
-				let specificCountry = model.countryInfos[country].data[model.countryInfos[country].data.length - i];
-				if (specificCountry?.total_vaccinations) {
-					isValid += 1;
-				}
+		//Pega os keys dos países do objeto countries
+		Object.keys(appModel.countries).forEach((e) => {
+			countriesKeys.push(e);
+		})
+
+		for (let i = 0; i < countriesKeys.length; i++) {
+			let isValid = 0;
+
+			/* Verifica em três diferentes dias o registro de total de vacinação; 
+			esta verificação é a validação de que o país iniciou o programa de vacinação contra a covid-19 */
+			if (appModel.countries[ countriesKeys[i] ].data[ appModel.countries [countriesKeys[i]].data.length - 1 ].total_vaccinations) {
+				isValid++;
+			}else if (appModel.countries[ countriesKeys[i] ].data[ appModel.countries [countriesKeys[i]].data.length - 2 ].total_vaccinations) {
+				isValid++;
+			}else if (appModel.countries[ countriesKeys[i] ].data[ appModel.countries [countriesKeys[i]].data.length - 3 ].total_vaccinations) {
+				isValid++;
 			}
 			if (isValid > 0) {
-				model.validCountrysInfos.push(country);
+				appModel.validCountries.push( countriesKeys[i] );
 			}
 		}
 
-		Object.keys(model.countryInfos).forEach((element) => {
-			checkValidCountry(element);
+		appModel.validCountries.forEach((e) => {
+			let country = appModel.countries[e].location;
+			appView.generateList(e,country);
 		})
-	},
 
-	//Pega as informações do país que foi escolhido no input select
-	getSelectedCountryInfos : (e) => {
-		function checkValues (value) {
-			return typeof(value) == 'undefined' ? "Indisponível" : value.toLocaleString()
-		}
-
-		//Faz a captura de todas as informações necessárias
-		function getFullInfo (country) {
-			model.placeHolders.appliedVaccines.innerHTML = checkValues(country.total_vaccinations);
-			model.placeHolders.appliedVaccinesAddition.innerHTML = `+${checkValues(country.new_vaccinations)}`;
-			model.placeHolders.immunizedPeople.innerHTML = checkValues(country.people_fully_vaccinated);
-			model.placeHolders.lastUpdate.innerHTML = checkValues(country.date);
-		}
-
-		//Verificar se o array tem informações referentes a vacinação.
-		function filterData (country) {
-			if (country == 0) {
-
-			}
-			else if (model.countryInfos[country].data[ model.countryInfos[country].data.length - 1].total_vaccinations) {
-				let currentData = model.countryInfos[country].data[ model.countryInfos[country].data.length - 1];
-				getFullInfo(currentData);
-			}else if (model.countryInfos[country].data[ model.countryInfos[country].data.length - 2].total_vaccinations) {
-				let currentData = model.countryInfos[country].data[ model.countryInfos[country].data.length - 2];
-				getFullInfo(currentData);
-			}else if (model.countryInfos[country].data[ model.countryInfos[country].data.length - 3].total_vaccinations) {
-				let currentData = model.countryInfos[country].data[ model.countryInfos[country].data.length - 3];
-				getFullInfo(currentData);
-			}else { 
-				console.log("Error");
-			}
-		}
-		countrySelected = e.target.value;
-		filterData(countrySelected);
-		
 	}
-}
 
+	requestData();
+	checkValidCountries();
+	return {
 
-controller.init();
+	}
+})(model,view);
