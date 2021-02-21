@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" type="text/css" href="src/css/style.css">
+	<link href="https://fonts.googleapis.com/css2?family=Lato&family=Open+Sans&display=swap" rel="stylesheet">
+	<script defer src="src/js/Chart.min.js"> </script>
+	<script defer src="src/js/chart.js"> </script>
+	<script defer src="src/js/scriptRefatured.js"> </script>
+	<title>Vacinação</title>
+</head>
+<body>
+	<header class="header">
+		<h1>Vacinação covid 19</h1>
+		<select class="country-selector">
+			<option value="0">Selecione um país </option>
+		</select>
+	</header>	
+
+	<div class="row">
+		<div class="card">
+			<h4 class="card-title">Total de doses aplicadas</h4>
+			<p class="card-value" id="total-vaccination">-</p>
+		</div>
+
+		<div class="card">
+			<h4 class="card-title">Novas doses aplicadas</h4>
+			<p class="card-value" id="new-vaccination-number">-</p>
+		</div>
+
+		<div class="card">
+			<h4 class="card-title">Pessoas imunizadas</h4>
+			<p class="card-value" id="fully-immunized">-</p>
+		</div>
+	</div>
+
+	<div class="second-row">
+		<div class="table">
+			<table id="week-report">
+				<thead>
+					<tr class="week-report-head">
+						<th>Dia</th>
+						<th>Doses aplicadas </th>
+						<th>Novas doses aplicadas </th>
+						<th>Imunizados </th>
+					</tr>
+				</thead>
+			</table>
+		</div>
+
+		<div class="chart">
+			<canvas id="myChart" width="400" height="400"> 
+				
+			</canvas>
+		</div>
+
+	</div>
+
+</body>
+</html>
